@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Başvuru Takip Sistemi</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Başvuru Formu</h1>
+        <form id="basvuruform">
+            <input type="text" placeholder="Adınız" name="Ad" required>
+            <input type="text" placeholder="Soyadınız" name="Soyad" required>
+            <input type="email" placeholder="E posta" name="email" required>
+            <select name="tip" required>
+                <option value="imar">İmar Durumu</option>
+                <option value="ariza">Ariza Bildirimi</option>
+                <option value="yardim">Yardım Talebi</option>
+            </select>
+            <textarea placeholder="Açıklama" name="aciklama" rows="4" required></textarea>
+            <button type="submit">Gönder</button>
+        </form>
+    </div>
+<script src="script.js"></script>
+</body>
+</html>
