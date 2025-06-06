@@ -1,27 +1,40 @@
-document.getElementById("basvuruForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("form");
 
-  const form = e.target;
-  const data = {
-    ad: form.ad.value,
-    soyad: form.soyad.value,
-    email: form.email.value,
-    tip: form.tip.value,
-    aciklama: form.aciklama.value
-  };
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-  try {
-    const response = await fetch("/basvuru", {
+    // Formdan verileri al
+    const formData = {
+      ad: document.getElementById("ad").value,
+      soyad: document.getElementById("soyad").value,
+      email: document.getElementById("email").value,
+      tip: document.getElementById("tip").value,
+      aciklama: document.getElementById("aciklama").value
+    };
+
+    // Konsola da yaz (isteğe bağlı)
+    console.log("Gönderilen veri:", formData);
+
+    // POST isteği ile server.js'e gönder
+    fetch("/basvuru", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-    alert(result.mesaj || "Başvuru alındı!");
-    form.reset();
-  } catch (err) {
-    alert("Başvuru gönderilirken hata oluştu.");
-    console.error(err);
-  }
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("İstek başarısız.");
+        return res.json();
+      })
+      .then(data => {
+        alert(data.mesaj || "Başvuru başarıyla gönderildi!");
+        form.reset(); // Formu temizle
+      })
+      .catch(err => {
+        console.error("Hata:", err);
+        alert("Başvuru gönderilemedi.");
+      });
+  });
 });

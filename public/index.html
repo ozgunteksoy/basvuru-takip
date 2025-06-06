@@ -9,16 +9,16 @@
 <body>
     <div class="container">
         <h1>Başvuru Formu</h1>
-        <form id="basvuruform">
-            <input type="text" placeholder="Adınız" name="Ad" required>
-            <input type="text" placeholder="Soyadınız" name="Soyad" required>
-            <input type="email" placeholder="E posta" name="email" required>
-            <select name="tip" required>
+        <form id="form">
+            <input type="text" placeholder="Adınız" name="Ad" id="ad" required>
+            <input type="text" placeholder="Soyadınız" name="Soyad" id="soyad" required>
+            <input type="email" placeholder="E posta" name="email" id="email" required>
+            <select name="tip" id="tip" required>
                 <option value="imar">İmar Durumu</option>
                 <option value="ariza">Ariza Bildirimi</option>
                 <option value="yardim">Yardım Talebi</option>
             </select>
-            <textarea placeholder="Açıklama" name="aciklama" rows="4" required></textarea>
+            <textarea placeholder="Açıklama" name="aciklama" id="aciklama" rows="4" required></textarea>
             <button type="submit">Gönder</button>
         </form>
     </div>
