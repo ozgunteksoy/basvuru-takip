@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Başvuru Listesi</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1>Başvuru Listesi</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Ad</th>
+                <th>Soyad</th>
+                <th>Email</th>
+                <th>Tip</th>
+                <th>Açıklama</th>
+            </tr>
+        </thead>
+        <tbody id="tablo-govdesi"></tbody>
+    </table>
+
+<script>
+    fetch("/liste")
+    .then(res => res.json())
+    .then(data => {
+        const tbody = document.getElementById("tablo-govdesi");
+data.forEach(kisi => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${kisi.ad}</td>
+    <td>${kisi.soyad}</td>
+    <td>${kisi.email}</td>
+    <td>${kisi.tip}</td>
+    <td>${kisi.aciklama}</td>
+    <td><button onclick="sil(${kisi.id})">Sil</button></td>
+  `;
+  tbody.appendChild(tr);
+        });
+    }).catch(err => {
+        console.error("Veri alınamadı:",err);
+        alert("Veri alınamadı");
+    })
+
+    function sil(id) {
+    if (confirm("Bu başvuruyu silmek istediğinizden emin misiniz?")) {
+      fetch(`/basvuru/${id}`, {
+        method: "DELETE"
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.mesaj);
+          location.reload(); // sayfayı yenile
+        })
+        .catch(err => {
+          console.error("Silme hatası:", err);
+          alert("Silme işlemi başarısız.");
+        });
+    }
+  }
+</script>
+</body>
+</html>
