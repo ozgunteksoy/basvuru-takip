@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Başvuru Listesi</title>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+    <div class="container">
     <h1>Başvuru Listesi</h1>
+
+    <input type="text" id="aramaKutusu" placeholder="İsme göre ara..." />
+
     <table border="1">
         <thead>
             <tr>
@@ -16,49 +21,79 @@
                 <th>Email</th>
                 <th>Tip</th>
                 <th>Açıklama</th>
+                <th colspan="2">İşlem</th>
             </tr>
         </thead>
         <tbody id="tablo-govdesi"></tbody>
     </table>
-
+</div>
 <script>
+    let tumVeriler = [];
+
+    function tabloyuDoldur(veriler) {
+        const tbody = document.getElementById("tablo-govdesi");
+        tbody.innerHTML = "";
+        veriler.forEach(kisi => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${kisi.ad}</td>
+                <td>${kisi.soyad}</td>
+                <td>${kisi.email}</td>
+                <td>${kisi.tip}</td>
+                <td>${kisi.aciklama}</td>
+<td>
+  <button class="btn btn-edit" onclick="duzenle(${kisi.id})">
+    <i class="fas fa-pen"></i> Düzenle
+  </button>
+  <button class="btn btn-delete" onclick="sil(${kisi.id})">
+    <i class="fas fa-trash"></i> Sil
+  </button>
+</td>            `;
+            tbody.appendChild(tr);
+        });
+    }
+    
     fetch("/liste")
     .then(res => res.json())
     .then(data => {
-        const tbody = document.getElementById("tablo-govdesi");
-data.forEach(kisi => {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td>${kisi.ad}</td>
-    <td>${kisi.soyad}</td>
-    <td>${kisi.email}</td>
-    <td>${kisi.tip}</td>
-    <td>${kisi.aciklama}</td>
-    <td><button onclick="sil(${kisi.id})">Sil</button></td>
-  `;
-  tbody.appendChild(tr);
-        });
-    }).catch(err => {
-        console.error("Veri alınamadı:",err);
-        alert("Veri alınamadı");
+        tumVeriler = data;
+        tabloyuDoldur(tumVeriler);
     })
+    .catch(err => {
+        console.error("Veri alınamadı:", err);
+        alert("Veri alınamadı");
+    });
+
+    document.getElementById("aramaKutusu").addEventListener("input", function () {
+        const aranan = this.value.toLowerCase();
+        const filtreli = tumVeriler.filter(kisi =>
+            (kisi.ad || "").toLowerCase().includes(aranan) ||
+            (kisi.soyad || "").toLowerCase().includes(aranan) ||
+            (kisi.tip || "").toLowerCase().includes(aranan)
+        );
+        tabloyuDoldur(filtreli);
+    });
 
     function sil(id) {
-    if (confirm("Bu başvuruyu silmek istediğinizden emin misiniz?")) {
-      fetch(`/basvuru/${id}`, {
-        method: "DELETE"
-      })
-        .then(res => res.json())
-        .then(data => {
-          alert(data.mesaj);
-          location.reload(); // sayfayı yenile
-        })
-        .catch(err => {
-          console.error("Silme hatası:", err);
-          alert("Silme işlemi başarısız.");
-        });
+        if (confirm("Bu başvuruyu silmek istediğinizden emin misiniz?")) {
+            fetch(`/basvuru/${id}`, {
+                method: "DELETE"
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.mesaj);
+                location.reload();
+            })
+            .catch(err => {
+                console.error("Silme hatası:", err);
+                alert("Silme işlemi başarısız.");
+            });
+        }
     }
-  }
+
+    function duzenle(id) {
+        window.location.href = `/duzenle.html?id=${id}`;
+    }
 </script>
 </body>
 </html>

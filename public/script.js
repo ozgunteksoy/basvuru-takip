@@ -38,3 +38,43 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const tablo = document.querySelector("#veriTablosu tbody");
+  const aramaKutusu = document.getElementById("aramaKutusu");
+  let tumVeriler = [];
+
+  fetch("/liste")
+    .then(res => res.json())
+    .then(veriler => {
+      tumVeriler = veriler;
+      tabloyuGuncelle(tumVeriler);
+    });
+
+  aramaKutusu.addEventListener("input", () => {
+    console.log("Yazılıyor:", aramaKutusu.value);
+    const aranan = aramaKutusu.value.toLowerCase();
+    const filtreli = tumVeriler.filter(veri =>
+      (veri.ad || "").toLowerCase().includes(aranan) ||
+      (veri.soyad || "").toLowerCase().includes(aranan) ||
+      (veri.tip || "").toLowerCase().includes(aranan)
+    );
+    tabloyuGuncelle(filtreli);
+  });
+
+  function tabloyuGuncelle(veriler) {
+    tablo.innerHTML = "";
+    veriler.forEach(veri => {
+      const satir = document.createElement("tr");
+      satir.innerHTML = `
+        <td>${veri.ad}</td>
+        <td>${veri.soyad}</td>
+        <td>${veri.email}</td>
+        <td>${veri.tip}</td>
+        <td>${veri.aciklama}</td>
+        <td><button onclick="sil(${veri.id})">Sil</button></td>
+      `;
+      tablo.appendChild(satir);
+    });
+  }
+});

@@ -6,9 +6,29 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 3000;
 
-app.use(express.static("public"));
+app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(express.static("public"));
+
+app.get("/duzenle/:id", (req, res) => {
+  const id = req.params.id;
+  const dosyaYolu = path.join(__dirname, "veriler.json");
+
+  if (!fs.existsSync(dosyaYolu)) {
+    return res.status(404).json({ mesaj: "Veri dosyası bulunamadı" });
+  }
+
+  const veriler = JSON.parse(fs.readFileSync(dosyaYolu, "utf-8"));
+  const kayit = veriler.find(v => String(v.id) === id);
+
+  if (kayit) {
+    res.json(kayit);
+  } else {
+    res.status(404).json({ mesaj: "Kayıt bulunamadı" });
+  }
+});
 
 // POST /basvuru: Form verisini JSON dosyasına kaydeder
 app.post("/basvuru", (req, res) => {
@@ -70,6 +90,20 @@ app.delete("/basvuru/:id", (req, res) => {
   res.json({ mesaj: "Silindi" });
 });
 
+app.use(express.json());
+
+app.put("/guncelle/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  let veriler = JSON.parse(fs.readFileSync("veriler.json"));
+  const index = veriler.findIndex(v => v.id === id);
+  if (index !== -1) {
+    veriler[index] = { id, ...req.body };
+    fs.writeFileSync("veriler.json", JSON.stringify(veriler, null, 2));
+    res.json({ mesaj: "Kayıt başarıyla güncellendi" });
+  } else {
+    res.status(404).json({ mesaj: "Kayıt bulunamadı" });
+  }
+});
 
 // Sunucuyu başlat
 app.listen(PORT, () => {

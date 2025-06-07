@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Başvuru Güncelle</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+  <h1>Başvuru Güncelle</h1>
+  <form id="guncelleForm">
+    <input type="text" id="ad" placeholder="Ad" required /><br />
+    <input type="text" id="soyad" placeholder="Soyad" required /><br />
+    <input type="email" id="email" placeholder="Email" required /><br />
+    <select name="tip" id="tip" required>
+      <option value="imar">İmar Durumu</option>
+      <option value="ariza">Ariza Bildirimi</option>
+      <option value="yardim">Yardım Talebi</option>
+    </select>
+    <textarea id="aciklama" rows="4" placeholder="Açıklama"></textarea><br />
+    <button type="submit">Kaydı Güncelle</button>
+  </form>
+</div>
+<script>
+  const id = new URLSearchParams(window.location.search).get("id");
+
+  fetch(`/duzenle/${id}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("ad").value = data.ad;
+      document.getElementById("soyad").value = data.soyad;
+      document.getElementById("email").value = data.email;
+      document.getElementById("tip").value = data.tip;
+      document.getElementById("aciklama").value = data.aciklama;
+    });
+
+  document.getElementById("guncelleForm").addEventListener("submit", e => {
+    e.preventDefault();
+    fetch(`/guncelle/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ad: document.getElementById("ad").value,
+        soyad: document.getElementById("soyad").value,
+        email: document.getElementById("email").value,
+        tip: document.getElementById("tip").value,
+        aciklama: document.getElementById("aciklama").value,
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.mesaj);
+        window.location.href = "/liste.html";
+      });
+  });
+</script>
+</body>
+</html>
