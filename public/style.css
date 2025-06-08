@@ -127,3 +127,24 @@ button + button {
 .btn-delete:hover {
   background-color: #c82333;
 }
+
+#aramaKutusu {
+  width: 250px;
+  height: 30px;
+  padding: 8px; 
+  width: 250px; 
+  margin-bottom: 10px
+}
+
+.csv {
+  width: 250px;
+  height: 30px;
+  margin-top: 10px; 
+  padding: 8px 14px;
+  background-color: #2190eb;
+}
+.csv:hover {
+  background-color: #0974cb;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}

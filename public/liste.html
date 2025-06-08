@@ -11,7 +11,9 @@
     <div class="container">
     <h1>Başvuru Listesi</h1>
 
-    <input type="text" id="aramaKutusu" placeholder="İsme göre ara..." />
+    <input type="text" id="aramaKutusu" placeholder="Filtrele beni..." onkeyup="tabloyuFiltrele()"/>
+
+    <button class="csv" onclick="verileriCSVyeAktar()">CSV Olarak Dışa Aktar</button>
 
     <table border="1">
         <thead>
@@ -94,6 +96,59 @@
     function duzenle(id) {
         window.location.href = `/duzenle.html?id=${id}`;
     }
+
+    function tabloyuFiltrele() {
+        const input = document.getElementById("aramaKutusu");
+        const filtre = input.value.toLowerCase();
+        const satirlar = document.querySelectorAll("tablo tbody tr");
+
+        satirlar.forEach((satir)=> {
+            const hucreler = satir.querySelectorAll("td");
+            let eslesmeVar = false;
+
+            hucreler.forEach((hucre)=> {
+                if (hucre.textContent.toLocaleLowerCase().includes(filtre)) {
+                    eslesmeVar = true;
+                }
+            });
+
+            if (eslesmeVar) {
+                satir.style.display = "";
+            } else {
+                satir.style.display = "none";
+            }
+        });
+    }
+
+    function verileriCSVyeAktar() {
+  const satirlar = document.querySelectorAll("table tr");
+  let csv = [];
+
+  satirlar.forEach((satir) => {
+    const hucreler = satir.querySelectorAll("th, td");
+    let satirVerisi = [];
+
+    hucreler.forEach((hucre) => {
+      let veri = hucre.textContent.trim();
+      if (veri.includes(",") || veri.includes('"')) {
+        veri = `"${veri.replace(/"/g, '""')}"`;
+      }
+      satirVerisi.push(veri);
+    });
+
+    csv.push(satirVerisi.join(","));
+  });
+
+  const blob = new Blob([utf8BOM+csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "basvurular.txt");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 </script>
 </body>
 </html>
