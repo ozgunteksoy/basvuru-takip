@@ -1,3 +1,4 @@
 node_modules/
 .env
 veriler.json
+db.js
