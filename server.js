@@ -54,7 +54,8 @@ app.delete('/basvuru/:id',async (req,res)=>{
 
   try{
     const pool = await connectToDatabase();
-    await pool.request()
+    const result = await pool
+    .request()
     .input('id',sql.Int,id)
     .query('DELETE FROM Basvurular WHERE id=@id');
 
@@ -71,17 +72,18 @@ app.delete('/basvuru/:id',async (req,res)=>{
 
 app.put('/guncelle/:id',async(req,res)=> {
   const id = parseInt(req.params.id);
+  console.log("Güncellenen ID:", id);
   const {ad,soyad,email,tip,aciklama} = req.body;
 
   try {
     const pool = await connectToDatabase();
-    await pool.request()
+    const result = await pool.request()
       .input('id',sql.Int,id)
-      .input('ad', sql.VarChar, ad)
-      .input('soyad', sql.VarChar, soyad)
-      .input('email', sql.VarChar, email)
-      .input('tip', sql.VarChar, tip)
-      .input('aciklama', sql.VarChar, aciklama)
+      .input('ad', sql.VarChar(50), ad)
+      .input('soyad', sql.VarChar(50), soyad)
+      .input('email', sql.VarChar(50), email)
+      .input('tip', sql.VarChar(20), tip)
+      .input('aciklama', sql.VarChar(100), aciklama)
       .query('UPDATE Basvurular SET ad=@ad,soyad=@soyad,email=@email,tip=@tip,aciklama=@aciklama WHERE id=@id');
     
     if (result.rowsAffected[0] === 0) {
