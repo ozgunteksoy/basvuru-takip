@@ -9,63 +9,84 @@
   <div class="container">
   <h1>Başvuru Güncelle</h1>
   <form id="guncelleForm">
-    <input type="text" id="ad" name="ad" placeholder="Adınız" required /><br />
-    <input type="text" id="soyad" name="soyad" placeholder="Soyadınız" required /><br />
-    <input type="email" id="email" name="email" placeholder="Email" required /><br />
-    <select name="tip" id="tip" required>
-      <option value="imar">İmar Durumu</option>
-      <option value="ariza">Ariza Bildirimi</option>
-      <option value="yardim">Yardım Talebi</option>
-    </select>
-    <textarea id="aciklama" name="aciklama" rows="4" placeholder="Açıklama"></textarea><br />
+<input type="hidden" id="id" />
+      <label for="ad">Ad:</label>
+      <input type="text" id="ad" required /><br />
+      <label for="soyad">Soyad:</label>
+      <input type="text" id="soyad" required /><br />
+      <label for="email">E-posta:</label>
+      <input type="email" id="email" required /><br />
+      <label for="tip">Başvuru Tipi:</label>
+      <select id="tip">
+        <option value="İmar Durumu">İmar Durumu</option>
+        <option value="Arıza Bildirimi">Arıza Bildirimi</option>
+        <option value="Yardım">Yardım Talebi</option>
+      </select><br />
+      <label for="aciklama">Açıklama:</label>    <textarea id="aciklama" name="aciklama" rows="4" placeholder="Açıklama"></textarea><br />
     <button type="submit">Kaydı Güncelle</button>
   </form>
 </div>
 
 <script>
-  const id = new URLSearchParams(window.location.search).get("id");
+  document.addEventListener("DOMContentLoaded", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
+      if (!id) return alert("ID bulunamadı.");
 
-  fetch(`/duzenle/${id}`)
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("ad").value = data.ad || "";
-      document.getElementById("soyad").value = data.soyad || "";
-      document.getElementById("email").value = data.email || "";
-      document.getElementById("tip").value = data.tip || "";
-      document.getElementById("aciklama").value = data.aciklama || "";
-    })
-    .catch(err => {
-      console.error('Veri alınamadı.',err);
-      alert('Kayıt yüklenemedi.');
-    });
+      // Form elemanları
+      const ad = document.getElementById("ad");
+      const soyad = document.getElementById("soyad");
+      const email = document.getElementById("email");
+      const tip = document.getElementById("tip");
+      const aciklama = document.getElementById("aciklama");
+      const form = document.getElementById("duzenleForm");
 
-    // Form gönderimi
-  document.getElementById("guncelleForm").addEventListener("submit", e => {
-    e.preventDefault();
-    const guncelVeri = {
-      ad:document.getElementById("ad").value,
-      soyad:document.getElementById("soyad").value,
-      email:document.getElementById("email").value,
-      tip:document.getElementById("tip").value,
-      aciklama:document.getElementById("aciklama").value
-    };
+      // Kayıt verisini çek
+      try {
+        const res = await fetch(`/duzenle/${id}`);
+        if (!res.ok) throw new Error("Kayıt alınamadı");
+        const veri = await res.json();
+        document.getElementById("id").value = veri.id;
+        ad.value = veri.ad;
+        soyad.value = veri.soyad;
+        email.value = veri.email;
+        tip.value = veri.tip;
+        aciklama.value = veri.aciklama;
+      } catch (err) {
+        alert("Veri alınırken hata oluştu");
+        console.error(err);
+      }
 
+      // Güncelleme işlemi
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const guncellenenVeri = {
+          ad: ad.value,
+          soyad: soyad.value,
+          email: email.value,
+          tip: tip.value,
+          aciklama: aciklama.value
+        };
 
-    fetch(`/guncelle/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(guncelVeri)
-    })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.mesaj || "Kayıt güncellendi.");
-        window.location.href = "/liste.html";
-      })
-      .catch(err=>{
-        console.error("Güncelleme hatası",err);
-        alert("Güncelleme başarısız.");
+        try {
+          const res = await fetch(`/guncelle/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(guncellenenVeri)
+          });
+
+          if (!res.ok) throw new Error("Güncelleme başarısız");
+          const data = await res.json();
+          alert(data.mesaj);
+          window.location.href = "liste.html";
+        } catch (err) {
+          alert("Güncelleme hatası");
+          console.error(err);
+        }
       });
-  });
+    });
 </script>
 </body>
 </html>

@@ -58,6 +58,10 @@ app.delete('/basvuru/:id',async (req,res)=>{
     .input('id',sql.Int,id)
     .query('DELETE FROM Basvurular WHERE id=@id');
 
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ mesaj: "Silinecek kayıt bulunamadı." });
+    }
+    
     res.json({mesaj:'Silme işlemi başarılı.'});
   } catch(err) {
     console.error('Silme hatası',err.message);
@@ -80,6 +84,9 @@ app.put('/guncelle/:id',async(req,res)=> {
       .input('aciklama', sql.VarChar, aciklama)
       .query('UPDATE Basvurular SET ad=@ad,soyad=@soyad,email=@email,tip=@tip,aciklama=@aciklama WHERE id=@id');
     
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({ mesaj: "Güncellenecek kayıt bulunamadı." });
+    }
     res.json({mesaj:'Kayıt başarıyla güncellendi.'});
   } catch(err) {
     console.error('Güncelleme hatası',err.message);
@@ -92,7 +99,8 @@ app.get('/duzenle/:id', async (req, res) => {
 
   try {
     const pool = await connectToDatabase();
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input('id', sql.Int, id)
       .query('SELECT * FROM Basvurular WHERE id = @id');
 

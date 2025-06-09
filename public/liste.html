@@ -8,12 +8,18 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+    <header>
+        <img src="/images/logo.png" alt="Nilüfer Belediyesi" />
+        <h2>Nilüfer Belediyesi Başvuru Takip Sistemi</h2>
+    </header>
     <div class="container">
+        <nav>
+            <a href="index.html">Yeni Başvuru</a>
+            <a href="liste.html">Başvuruları Listele</a>
+        </nav>
     <h1>Başvuru Listesi</h1>
-
     <input type="text" id="aramaKutusu" placeholder="Filtrele beni..." onkeyup="tabloyuFiltrele()"/>
-
-    <button class="csv" onclick="verileriCSVyeAktar()">CSV Olarak Dışa Aktar</button>
+    <button class="csv" onclick="verileriCSVyeAktar()"> <i class="fas fa-file-csv"></i>CSV Olarak Dışa Aktar</button>
 
     <table border="1">
         <thead>

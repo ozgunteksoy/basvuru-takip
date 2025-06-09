@@ -1,13 +1,17 @@
+:root {
+  --primary: #007e7a;
+  --secondary: #a0c334;
+  --light: #f2f7f3;
+    }
 * {
     box-sizing: border-box;
 }
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #f4f7f9;
+    background-color: var(--light);
     margin: 0;
     padding: 0;
-    color: #333;
 }
 .container {
     width: 100%;
@@ -20,9 +24,22 @@ body {
     box-shadow: 0 0 15px rgb(0,0,0,0.1);
 }
 
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--primary);
+  color: white;
+  padding: 1rem 2rem;
+}
+
+header img {
+  height: 60px;
+}
+
 h1 {
     text-align: center;
-    color: #0056b3;
+    color: var(--primary);
     margin-bottom: 30px;
 }
 
@@ -58,6 +75,7 @@ table {
     border-collapse: collapse;
     margin-top: 20px;
     background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     overflow: hidden;
 }
@@ -66,7 +84,7 @@ table th,
 table td {
     padding: 12px;
     border: 1px solid #ddd;
-    text-align: center;
+    text-align: left;
 }
 
 table td {
@@ -80,8 +98,12 @@ table td button {
 }
 
 table th {
-    background-color: #007b77;
+    background-color: var(--secondary);
     color: wheat;
+}
+
+tr:hover {
+  background-color: #eef9f7;
 }
 
 input[type="text"],
@@ -100,19 +122,20 @@ button + button {
 }
 
 .btn {
-  padding: 8px 14px;
+  padding: 0.4rem 0.8rem;
   font-size: 14px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   color: white;
-  margin: 2px;
+  margin-right: 0.3rem;
 }
 
 /* Düzenle butonu */
 .btn-edit {
-  background-color: #28a745; /* yeşil */
+  background-color: #e53935; /* yeşil */
+  color: white;
 }
 
 .btn-edit:hover {
@@ -128,12 +151,24 @@ button + button {
   background-color: #c82333;
 }
 
+.csv {
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 #aramaKutusu {
+  padding: 0.6rem;
   width: 250px;
   height: 30px;
-  padding: 8px; 
   width: 250px; 
-  margin-bottom: 10px
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .csv {
@@ -147,4 +182,23 @@ button + button {
   background-color: #0974cb;
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+label {
+  color: #dc3545;
+}
+
+nav {
+  margin-bottom: 1rem;
+}
+
+nav a {
+  color: var(--primary);
+  text-decoration: none;
+  margin-right: 1rem;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
 }
