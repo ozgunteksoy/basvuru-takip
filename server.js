@@ -3,6 +3,7 @@ connectToDatabase();
 
 const express = require("express");
 const fs = require("fs");
+const sql = require("mssql")
 const path = require("path");
 const bodyParser = require("body-parser");
 
@@ -15,6 +16,98 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
 
+app.post('/kaydet', async (req, res) => {
+  const { ad, soyad, email, tip, aciklama } = req.body;
+  console.log("Gelen veri:", { ad, soyad, email, tip, aciklama });
+
+  try {
+    const pool = await connectToDatabase();
+    await pool.request()
+      .input('ad', sql.VarChar, ad)
+      .input('soyad', sql.VarChar, soyad)
+      .input('email', sql.VarChar, email)
+      .input('tip', sql.VarChar, tip)
+      .input('aciklama', sql.VarChar, aciklama)
+      .query(`INSERT INTO Basvurular (ad, soyad, email, tip, aciklama)
+              VALUES (@ad, @soyad, @email, @tip, @aciklama)`);
+
+    res.status(200).send('Başvuru başarıyla kaydedildi.');
+  } catch (err) {
+    console.error('Kayıt hatası:', err.message);
+    res.status(500).send('Veri kaydedilemedi.');
+  }
+});
+
+app.get('/verileri-getir',async(req,res)=>{
+  try {
+    const pool = await connectToDatabase();
+    const result = await pool.request().query('SELECT * FROM Basvurular');
+    res.json(result.recordset);
+  } catch(err) {
+    console.error('Listeleme hatası:',err.message);
+    res.status(500).send('Veriler alınamadı.');
+  }
+});
+
+app.delete('/basvuru/:id',async (req,res)=>{
+  const id = parseInt(req.params.id);
+
+  try{
+    const pool = await connectToDatabase();
+    await pool.request()
+    .input('id',sql.Int,id)
+    .query('DELETE FROM Basvurular WHERE id=@id');
+
+    res.json({mesaj:'Silme işlemi başarılı.'});
+  } catch(err) {
+    console.error('Silme hatası',err.message);
+    res.status(500).json({mesaj:'Silme işlemi başarısız'});
+  }
+});
+
+app.put('/guncelle/:id',async(req,res)=> {
+  const id = parseInt(req.params.id);
+  const {ad,soyad,email,tip,aciklama} = req.body;
+
+  try {
+    const pool = await connectToDatabase();
+    await pool.request()
+      .input('id',sql.Int,id)
+      .input('ad', sql.VarChar, ad)
+      .input('soyad', sql.VarChar, soyad)
+      .input('email', sql.VarChar, email)
+      .input('tip', sql.VarChar, tip)
+      .input('aciklama', sql.VarChar, aciklama)
+      .query('UPDATE Basvurular SET ad=@ad,soyad=@soyad,email=@email,tip=@tip,aciklama=@aciklama WHERE id=@id');
+    
+    res.json({mesaj:'Kayıt başarıyla güncellendi.'});
+  } catch(err) {
+    console.error('Güncelleme hatası',err.message);
+    res.status(500).json({mesaj:'Kayıt güncellenemedi.'});
+  }
+});
+
+app.get('/duzenle/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  try {
+    const pool = await connectToDatabase();
+    const result = await pool.request()
+      .input('id', sql.Int, id)
+      .query('SELECT * FROM Basvurular WHERE id = @id');
+
+    if (result.recordset.length > 0) {
+      res.json(result.recordset[0]);
+    } else {
+      res.status(404).json({ mesaj: 'Kayıt bulunamadı' });
+    }
+  } catch (err) {
+    console.error('Kayıt çekme hatası:', err.message);
+    res.status(500).json({ mesaj: 'Veri çekilemedi' });
+  }
+});
+
+/*
 app.get("/duzenle/:id", (req, res) => {
   const id = req.params.id;
   const dosyaYolu = path.join(__dirname, "veriler.json");
@@ -107,7 +200,7 @@ app.put("/guncelle/:id", (req, res) => {
     res.status(404).json({ mesaj: "Kayıt bulunamadı" });
   }
 });
-
+*/
 // Sunucuyu başlat
 app.listen(PORT, () => {
   console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);

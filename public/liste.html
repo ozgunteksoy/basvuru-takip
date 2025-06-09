@@ -28,6 +28,7 @@
         </thead>
         <tbody id="tablo-govdesi"></tbody>
     </table>
+
 </div>
 <script>
     let tumVeriler = [];
@@ -43,19 +44,16 @@
                 <td>${kisi.email}</td>
                 <td>${kisi.tip}</td>
                 <td>${kisi.aciklama}</td>
-<td>
-  <button class="btn btn-edit" onclick="duzenle(${kisi.id})">
-    <i class="fas fa-pen"></i> Düzenle
-  </button>
-  <button class="btn btn-delete" onclick="sil(${kisi.id})">
-    <i class="fas fa-trash"></i> Sil
-  </button>
-</td>            `;
+                <td><button class="btn btn-edit" onclick="duzenle(${kisi.id})">
+                    <i class="fas fa-pen"></i> Düzenle
+                </button>
+                <button class="btn btn-delete" onclick="sil(${kisi.id})">
+                    <i class="fas fa-trash"></i> Sil</button></td>            `;
             tbody.appendChild(tr);
         });
     }
     
-    fetch("/liste")
+    fetch("/verileri-getir")
     .then(res => res.json())
     .then(data => {
         tumVeriler = data;
@@ -77,21 +75,21 @@
     });
 
     function sil(id) {
-        if (confirm("Bu başvuruyu silmek istediğinizden emin misiniz?")) {
-            fetch(`/basvuru/${id}`, {
-                method: "DELETE"
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.mesaj);
-                location.reload();
-            })
-            .catch(err => {
-                console.error("Silme hatası:", err);
-                alert("Silme işlemi başarısız.");
-            });
-        }
-    }
+  if (confirm("Bu başvuruyu silmek istediğinizden emin misiniz?")) {
+    fetch(`/basvuru/${id}`, {
+      method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.mesaj);
+      location.reload();
+    })
+    .catch(err => {
+      console.error("Silme hatası:", err);
+      alert("Silme işlemi başarısız.");
+    });
+  }
+}
 
     function duzenle(id) {
         window.location.href = `/duzenle.html?id=${id}`;
@@ -100,7 +98,7 @@
     function tabloyuFiltrele() {
         const input = document.getElementById("aramaKutusu");
         const filtre = input.value.toLowerCase();
-        const satirlar = document.querySelectorAll("tablo tbody tr");
+        const satirlar = document.querySelectorAll("tablo-govdesi tr");
 
         satirlar.forEach((satir)=> {
             const hucreler = satir.querySelectorAll("td");
