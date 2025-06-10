@@ -3,33 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Başvuru Takip Sistemi</title>
-    <link rel="stylesheet" href="style.css" />
+        <title>Admin Giriş</title>
+        <link rel="stylesheet" href="style.css" />
+
 </head>
 <body>
-    <header>
+    <header class="index">
         <img src="/images/logo.png" alt="Nilüfer Belediyesi" />
         <h2>Nilüfer Belediyesi Başvuru Takip Sistemi</h2>
     </header>
-    <div class="container">
-        <h1>Başvuru Formu</h1>
-        <nav>
-            <a href="liste.html">Başvuruları Listele</a>
-        </nav>
-
-        <form id="form" action="/kaydet" method="post">
-            <input type="text" placeholder="Adınız" name="Ad" id="ad" required>
-            <input type="text" placeholder="Soyadınız" name="Soyad" id="soyad" required>
-            <input type="email" placeholder="E posta" name="email" id="email" required>
-            <select name="tip" id="tip" required>
-                <option value="imar">İmar Durumu</option>
-                <option value="ariza">Ariza Bildirimi</option>
-                <option value="yardim">Yardım Talebi</option>
-            </select>
-            <textarea placeholder="Açıklama" name="aciklama" id="aciklama" rows="4" required></textarea>
-            <button type="submit">Gönder</button>
+    <div class="panel">
+        <h2>Kullanıcı Girişi</h2>
+        <form action="/login" method="POST">
+            <input type="text" name="kullanici_adi" placeholder="Kullanıcı Adı" required/>
+            <input type="password" name="sifre" placeholder="Şifre" required/>
+            <button type="submit">Giriş Yap</button>
         </form>
+        <form>
+            <button type="submit"><a href="admin.html" style="text-decoration: none; color: white;">Kayıt ol</a></button>
+        </form>
+        <p id="mesaj" style="color:red;"></p>
     </div>
-<script src="script.js"></script>
+    
+<script>
+    async function girisYap() {
+        const kullanici_adi = document.getElementById("kullaniciAdi").value;
+        const sifre = document.getElementById("sifre").value
+
+        const res = await fetch("/admin-giris", {
+            method:"POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({kullanici_adi,sifre})
+        });
+
+        const sonuc = await res.json();
+
+        if (res.ok) {
+            window.location.href="/index.html";
+        } else {
+            document.getElementById("mesaj").innerText = sonuc.mesaj || "Giriş Başarısız";
+        }
+    }
+</script>
 </body>
 </html>

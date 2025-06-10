@@ -33,6 +33,11 @@ header {
   padding: 1rem 2rem;
 }
 
+header.index h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
 header img {
   height: 60px;
 }
@@ -115,6 +120,7 @@ textarea {
 
 button {
     border-radius: 6px;
+    padding: 0.6rem 1rem; background: #007e7a; color: white; border: none; border-radius: 5px;
 }
 
 button + button {
@@ -161,6 +167,12 @@ button + button {
   cursor: pointer;
 }
 
+.csv:hover {
+  background-color: #0974cb;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
 #aramaKutusu {
   padding: 0.6rem;
   width: 250px;
@@ -169,19 +181,6 @@ button + button {
   margin-top: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
-}
-
-.csv {
-  width: 250px;
-  height: 30px;
-  margin-top: 10px; 
-  padding: 8px 14px;
-  background-color: #2190eb;
-}
-.csv:hover {
-  background-color: #0974cb;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 label {
@@ -201,4 +200,12 @@ nav a {
 
 nav a:hover {
   text-decoration: underline;
+}
+
+.panel {
+  background: white;padding: 2rem; border-radius: 10px; box-shadow: 0 0 10px #ccc;
+}
+
+input {
+  display: block; margin-bottom: 1rem; padding: 0.5rem; width: 100%;
 }

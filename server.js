@@ -6,6 +6,7 @@ const fs = require("fs");
 const sql = require("mssql")
 const path = require("path");
 const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
 
 const app = express();
 const PORT = 3000;
@@ -15,6 +16,99 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
+
+app.post("/login", async (req, res) => {
+  const { kullanici_adi, sifre } = req.body;
+
+  try {
+    // 1. Kullanıcıyı sorgula
+    const request = new sql.Request();
+    request.input("kullanici_adi", sql.NVarChar, kullanici_adi);
+
+    const result = await request.query(
+      "SELECT * FROM Admin WHERE kullanici_adi = @kullanici_adi"
+    );
+
+    if (result.recordset.length === 0) {
+      return res.send("Kullanıcı bulunamadı.");
+    }
+
+    const user = result.recordset[0];
+    const hashedPassword = user.sifre;
+
+    // 2. Şifre doğrulama
+    const passwordMatch = await bcrypt.compare(sifre, hashedPassword);
+
+    if (passwordMatch) {
+      // Giriş başarılıysa yönlendir
+      res.redirect("/anaSayfa.html");
+    } else {
+      res.send("Şifre yanlış.");
+    }
+
+  } catch (err) {
+    console.error("Giriş hatası:", err);
+    res.status(500).send("Sunucu hatası.");
+  }
+});
+
+
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return res.send("Şifre en az 8 karakter olmalı, bir büyük harf, bir küçük harf ve bir noktalama işareti içermelidir.");
+  }
+
+  try {
+    // 1. Kullanıcı var mı kontrolü
+    const checkRequest = new sql.Request();
+    checkRequest.input("kullanici_adi", sql.NVarChar, username);
+    const check = await checkRequest.query(
+      "SELECT * FROM Admin WHERE kullanici_adi = @kullanici_adi"
+    );
+
+    if (check.recordset.length > 0) {
+      return res.send("Bu kullanıcı adı zaten kayıtlı.");
+    }
+
+    // 2. Şifreyi hashle
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 3. Yeni kullanıcıyı Admin tablosuna kaydet
+    const insertRequest = new sql.Request();
+    insertRequest
+      .input("kullanici_adi", sql.NVarChar, username)
+      .input("sifre", sql.NVarChar, hashedPassword);
+
+    await insertRequest.query(
+      "INSERT INTO Admin (kullanici_adi, sifre) VALUES (@kullanici_adi, @sifre)"
+    );
+
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="tr">
+      <head>
+        <meta charset="UTF-8">
+        <title>Kayıt Başarılı</title>
+        <link rel="stylesheet" href="style.css" />
+      </head>
+      <body style="font-family:sans-serif;text-align:center;padding-top:50px;">
+        <h2>Kayıt başarılı!</h2>
+        <p>Ana sayfaya dönmek için için aşağıdaki butona tıklayın:</p>
+        <a href="/index.html">
+          <button style="padding: 10px 20px; font-size: 16px;">Ana Sayfa</button>
+        </a>
+      </body>
+      </html>
+    `);
+
+  } catch (err) {
+    console.error("Kayıt hatası:", err);
+    res.status(500).send("Sunucu hatası.");
+  }
+});
 
 app.post('/kaydet', async (req, res) => {
   const { ad, soyad, email, tip, aciklama } = req.body;
